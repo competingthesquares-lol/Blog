@@ -9,6 +9,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
+// --- 1. DATABASE CONNECTION ---
 mongoose.connect('mongodb://127.0.0.1:27017/simple_api')
     .then(() => console.log('Connected to MongoDB successfully!'))
     .catch(err => {
@@ -16,65 +17,23 @@ mongoose.connect('mongodb://127.0.0.1:27017/simple_api')
         console.error(err.message);
     });
 
-
-
-app.get(/.*/, (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
-});
-
-
+// --- 2. MONGOOSE MODEL ---
 const blogPostSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: true // A post must have a title
-  },
-  text: {
-    type: String,
-    required: true // A post must have content
-  },
-  tags: {
-    type: [String], // This syntax means "an array of strings"
-    default: []
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now // Mongoose will automatically set the exact time it's created
-  }
+  title: { type: String, required: true },
+  text: { type: String, required: true },
+  tags: { type: [String], default: [] },
+  createdAt: { type: Date, default: Date.now }
 });
 
-// We turn the schema into a Model so we can interact with it in other files
 const BlogPost = mongoose.model('BlogPost', blogPostSchema);
 
-module.exports = BlogPost;
+// --- 3. API ROUTES (Must come BEFORE the catch-all) ---
 
-
-
-
-app.delete('/api/posts/:id', async (req, res) => {
+// THE MISSING GET ROUTE: Fetch all posts
+app.get('/api/posts', async (req, res) => {
   try {
-    const deletedPost = await BlogPost.findByIdAndDelete(req.params.id);
-    if (!deletedPost) {
-      return res.status(404).json({ message: 'Post not found' });
-    }
-    res.json({ message: 'Post deleted successfully!' });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-app.put('/api/posts/:id', async (req, res) => {
-  try {
-    // We pass the ID to find the post, and req.body to provide the updated data
-    const updatedPost = await BlogPost.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true } // This tells Mongoose to send back the newly updated version
-    );
-
-    if (!updatedPost) {
-      return res.status(404).json({ message: 'Post not found' });
-    }
-    res.json(updatedPost);
+    const posts = await BlogPost.find().sort({ createdAt: -1 }); // Sorts newest first
+    res.json(posts);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -82,20 +41,46 @@ app.put('/api/posts/:id', async (req, res) => {
 
 app.post('/api/posts', async (req, res) => {
   try {
-    // We create a new post using the data from req.body
     const newPost = new BlogPost({
       title: req.body.title,
       text: req.body.text,
       tags: req.body.tags
     });
-
-    const savedPost = await newPost.save(); // Saves it to MongoDB
+    const savedPost = await newPost.save();
     res.status(201).json(savedPost);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 });
 
+app.put('/api/posts/:id', async (req, res) => {
+  try {
+    const updatedPost = await BlogPost.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    if (!updatedPost) return res.status(404).json({ message: 'Post not found' });
+    res.json(updatedPost);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
+app.delete('/api/posts/:id', async (req, res) => {
+  try {
+    const deletedPost = await BlogPost.findByIdAndDelete(req.params.id);
+    if (!deletedPost) return res.status(404).json({ message: 'Post not found' });
+    res.json({ message: 'Post deleted successfully!' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
+// --- 4. CATCH-ALL ROUTE (Must be the VERY LAST route) ---
+app.get(/.*/, (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+});
+
+// --- 5. START SERVER ---
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

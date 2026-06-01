@@ -30,34 +30,16 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
 
 body {
   margin: 0;
+  background-color: purple;
 }
 
 #root {
   width: 1126px; max-width: 100%;
   margin: 0 auto;
-  text-align: center;
+  text-align: left;
   border-inline: 1px solid var(--border);
   min-height: 100svh;
   display: flex;
@@ -109,13 +91,73 @@ code {
   background: var(--code-bg);
 }
 .main {
-    display: flex;
-    justify-content: space-around;
-    align-content: flex-start;
-    gap: 16px;
-    padding: 16px;
+  display: flex;
+  flex-direction: column; /* ⬅️ Forces form and articles to stack vertically */
+  gap: 32px;
+  padding: 24px;
+  max-width: 800px; /* ⬅️ Prevents the layout from stretching too wide */
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 .articles {
-    flex: 1 1 200px;
-    box-sizing: border-box;
+  flex: 1 1 200px;
+  box-sizing: border-box;
+  padding: 20px;
+  border: 10px solid lightblue;
+  background-color: green;
+}
+/* ⬅️ Add this to force long titles or texts to wrap */
+h2, p, .post-content {
+  overflow-wrap: break-word;
+  word-break: break-word;
+
+}
+.post-card {
+  margin-top: -2px;
+  border: 2px solid black;
+  padding: 20px;
+  background-color: darkgreen;
+}
+
+.post-card h2 {
+  color: black !important;
+}
+
+.single-post p {
+  color: white;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #9ca3af;
+    --text-h: #f3f4f6;
+    --bg: #16171d;
+    --border: #2e303a;
+    --code-bg: #1f2028;
+    --accent: #c084fc;
+    --accent-bg: rgba(192, 132, 252, 0.15);
+    --accent-border: rgba(192, 132, 252, 0.5);
+    --social-bg: rgba(47, 48, 58, 0.5);
+    --shadow:
+      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+  }
+
+  .post-card h2 {
+    color: white !important;
+  }
+  .single-post p {
+    color: white;
+  }
+  #social .button-icon {
+    filter: invert(1) brightness(2);
+  }
+}
+.form-container {
+  display: flex;
+  border: 10px solid red;
+  padding: 20px;
+  background-color: black !important;
+  justify-content: space-around;
+  flex-direction: column;
 }
