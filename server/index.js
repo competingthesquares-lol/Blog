@@ -9,7 +9,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
-// --- 1. DATABASE CONNECTION ---
 mongoose.connect('mongodb://127.0.0.1:27017/simple_api')
     .then(() => console.log('Connected to MongoDB successfully!'))
     .catch(err => {
@@ -17,7 +16,6 @@ mongoose.connect('mongodb://127.0.0.1:27017/simple_api')
         console.error(err.message);
     });
 
-// --- 2. MONGOOSE MODEL ---
 const blogPostSchema = new mongoose.Schema({
   title: { type: String, required: true },
   text: { type: String, required: true },
@@ -27,12 +25,10 @@ const blogPostSchema = new mongoose.Schema({
 
 const BlogPost = mongoose.model('BlogPost', blogPostSchema);
 
-// --- 3. API ROUTES (Must come BEFORE the catch-all) ---
 
-// THE MISSING GET ROUTE: Fetch all posts
 app.get('/api/posts', async (req, res) => {
   try {
-    const posts = await BlogPost.find().sort({ createdAt: -1 }); // Sorts newest first
+    const posts = await BlogPost.find().sort({ createdAt: -1 });
     res.json(posts);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -77,10 +73,8 @@ app.delete('/api/posts/:id', async (req, res) => {
   }
 });
 
-// --- 4. CATCH-ALL ROUTE (Must be the VERY LAST route) ---
 app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 
-// --- 5. START SERVER ---
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

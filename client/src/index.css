@@ -92,10 +92,10 @@ code {
 }
 .main {
   display: flex;
-  flex-direction: column; /* ⬅️ Forces form and articles to stack vertically */
+  flex-direction: column; 
   gap: 32px;
   padding: 24px;
-  max-width: 800px; /* ⬅️ Prevents the layout from stretching too wide */
+  max-width: 800px; 
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
@@ -107,7 +107,7 @@ code {
   border: 10px solid lightblue;
   background-color: green;
 }
-/* ⬅️ Add this to force long titles or texts to wrap */
+
 h2, p, .post-content {
   overflow-wrap: break-word;
   word-break: break-word;

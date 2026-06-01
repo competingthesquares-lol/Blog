@@ -10,7 +10,6 @@ function App() {
   const [posts, setPosts] = useState([]);
   const [selectedPostId, setSelectedPostId] = useState(null); 
 
-  // 🔌 1. Fetching data from Express
   useEffect(() => {
     fetch('http://localhost:5000/api/posts')
       .then(response => response.json())
@@ -20,7 +19,6 @@ function App() {
       .catch(error => console.error('Error fetching posts:', error));
   }, []);
 
-  // 📝 2. Submit a new blog post
   const handleSubmit = async (e) => {
     e.preventDefault(); 
     if (!title || !text) return alert("Please fill out both fields!");
@@ -46,9 +44,8 @@ function App() {
     }
   };
 
-  // 🗑️ 3. NEW: Delete a blog post
   const handleDelete = async (id, e) => {
-    e.stopPropagation(); // 🛑 Stops the card from opening when clicking delete
+    e.stopPropagation(); 
     
     if (!window.confirm("Are you sure you want to delete this blog post?")) return;
 
@@ -57,10 +54,8 @@ function App() {
         method: 'DELETE'
       });
       
-      // Remove it from our frontend screen immediately
       setPosts(posts.filter(post => post._id !== id));
       
-      // If we are currently reading the deleted post, kick back to the list view
       if (selectedPostId === id) setSelectedPostId(null);
     } catch (error) {
       console.error('Error deleting post:', error);
@@ -71,7 +66,6 @@ function App() {
 
   return (
     <div className="main">
-      {/* 📝 New Post Form Container */}
       <div className="form-container">
         <h2>Create a New Post</h2>
         <form onSubmit={handleSubmit} className="new-post-form">
@@ -92,10 +86,8 @@ function App() {
         </form>
       </div>
       
-      {/* ⬇️ Articles Feed Container ⬇️ */}
       <div className="articles">
         {activePost ? (
-          // 📄 Single Post View
           <article className="single-post">
             <button className="btn-back" onClick={() => setSelectedPostId(null)}>← Back to Posts</button>
             <h2>{activePost.title}</h2>
@@ -103,7 +95,6 @@ function App() {
             <button className="btn-delete" onClick={(e) => handleDelete(activePost._id, e)}>Delete Post</button>
           </article>
         ) : (
-          // 📑 All Posts List View (Styled as cards with borders)
           posts.map(post => (
             <article key={post._id} className="post-card" onClick={() => setSelectedPostId(post._id)}>
               <div className="post-card-header">
